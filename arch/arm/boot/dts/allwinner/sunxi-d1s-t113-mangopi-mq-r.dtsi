@@ -67,6 +67,33 @@
 		compatible = "mmc-pwrseq-simple";
 		reset-gpios = <&pio 6 12 GPIO_ACTIVE_LOW>; /* PG12 */
 	};
+
+	panel_rgb: panel-rgb {
+		compatible = "panel-dpi";
+		label = "lcd";
+		port {
+			panel_in_rgb: endpoint {
+				remote-endpoint = <&tcon_lcd0_out_rgb>;
+			};
+		};
+
+		panel-timing {
+			clock-frequency = <30000000>;
+			hactive = <800>;
+			vactive = <480>;
+			hfront-porch = <40>;
+			hback-porch = <88>;
+			hsync-len = <1>;
+			vback-porch = <32>;
+			vfront-porch = <13>;
+			vsync-len = <3>;
+
+			hsync-active = <1>;
+			vsync-active = <1>;
+			de-active = <1>;
+			pixelclk-active = <1>;
+		};
+	};
 };
 
 &dcxo {
@@ -130,4 +157,30 @@
 &usbphy {
 	usb1_vbus-supply = <&reg_vcc5v>;
 	status = "okay";
+};
+
+&de {
+	status = "okay";
+};
+
+&tcon_top {
+	status = "okay";
+};
+
+&tcon_lcd0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&lcd_rgb666_pins>;
+
+	status = "okay";
+};
+
+&tcon_lcd0_out {
+	tcon_lcd0_out_rgb: endpoint@0 {
+		reg = <0>;
+		remote-endpoint = <&panel_in_rgb>;
+	};
+};
+
+&tcon_tv0 {
+	status = "disabled";
 };
