@@ -14,6 +14,7 @@
 
 	chosen {
 		stdout-path = "serial5:115200n8";
+		bootargs = "mem=128M cma=4M root=/dev/mmcblk0p2 init=/sbin/init console=ttyS5,115200 rootwait clk_ignore_unused drm.debug=0x3";
 	};
 
 	leds {
