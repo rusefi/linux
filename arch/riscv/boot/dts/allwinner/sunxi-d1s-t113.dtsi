@@ -191,6 +191,12 @@
 				pins = "PB6", "PB7";
 				function = "uart3";
 			};
+
+			/omit-if-no-ref/
+			uart5_pb_pins: uart5-pb-pins {
+				pins = "PB4", "PB5";
+				function = "uart5";
+			};
 		};
 
 		ccu: clock-controller@2001000 {
