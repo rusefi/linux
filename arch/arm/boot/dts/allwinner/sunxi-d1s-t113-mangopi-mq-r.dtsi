@@ -184,3 +184,7 @@
 &tcon_tv0 {
 	status = "disabled";
 };
+
+&can0 {
+	status = "okay";
+};
