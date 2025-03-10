@@ -22,7 +22,7 @@
 
 		led-0 {
 			color = <LED_COLOR_ID_BLUE>;
-			function = LED_FUNCTION_STATUS;
+			function = LED_FUNCTION_ACTIVITY;
 			gpios = <&pio 3 22 GPIO_ACTIVE_LOW>; /* PD22 */
 		};
 	};
