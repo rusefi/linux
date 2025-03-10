@@ -19,10 +19,12 @@
 
 &cpu0 {
 	cpu-supply = <&reg_vcc_core>;
+	clock-frequency = <1200000000>;
 };
 
 &cpu1 {
 	cpu-supply = <&reg_vcc_core>;
+	clock-frequency = <1200000000>;
 };
 
 &mmc1 {
