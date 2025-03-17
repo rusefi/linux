@@ -11,7 +11,6 @@
 	interrupt-parent = <&gic>;
 
 	cpus {
-		enable-method = "allwinner,sun8iw20p1";
 		#address-cells = <1>;
 		#size-cells = <0>;
 
@@ -19,6 +18,7 @@
 			compatible = "arm,cortex-a7";
 			device_type = "cpu";
 			reg = <0>;
+			enable-method = "allwinner,sun8iw20p1";
 			clocks = <&ccu CLK_CPUX>;
 			clock-names = "cpu";
 		};
@@ -27,6 +27,7 @@
 			compatible = "arm,cortex-a7";
 			device_type = "cpu";
 			reg = <1>;
+			enable-method = "allwinner,sun8iw20p1";
 			clocks = <&ccu CLK_CPUX>;
 			clock-names = "cpu";
 		};
