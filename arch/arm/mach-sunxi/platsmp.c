@@ -197,11 +197,19 @@ static int sun8i_t113_smp_boot_secondary(unsigned int cpu,
 				    struct task_struct *idle)
 {
 	u32 reg;
-	void __iomem *cpucfg_membase = ioremap(0x09010000, 0x10);
+	void __iomem *cpucfg_membase = ioremap(0x09010000, 0x100);
 	void __iomem *cpuexec_membase[] = {ioremap(0x070005C4, 0x10),ioremap(0x070005C8, 0x10)};
 
 	if (cpu != 1)
 		return 0;
+
+	printk("!!!Trying to boot CPU 1\n");
+
+	reg = readl(cpucfg_membase + 0x00);
+	printk("Cluster0 Reset Control Register %08x\n", reg);
+
+	reg = readl(cpucfg_membase + 0x80);
+	printk("Cluster0 CPU Status Register %08x\n", reg);
 
 	spin_lock(&cpu_lock);
 
