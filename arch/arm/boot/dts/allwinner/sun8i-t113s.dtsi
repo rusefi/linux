@@ -32,6 +32,21 @@
 		};
 	};
 
+	memory {
+	    reg = <0x40000000 0x8000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		dsp0_reserved: dsp0@42000000 {
+			no-map;
+			reg = <0x42000000 0x100000>;
+		};
+	};
+
 	gic: interrupt-controller@1c81000 {
 		compatible = "arm,gic-400";
 		reg = <0x03021000 0x1000>,
