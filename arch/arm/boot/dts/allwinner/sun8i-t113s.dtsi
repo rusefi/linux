@@ -11,6 +11,7 @@
 	interrupt-parent = <&gic>;
 
 	cpus {
+		enable-method = "allwinner,sun8iw20p1";
 		#address-cells = <1>;
 		#size-cells = <0>;
 
