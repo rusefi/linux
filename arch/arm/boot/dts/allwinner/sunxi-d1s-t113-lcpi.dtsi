@@ -148,6 +148,12 @@
 		pins = "PE2", "PE3";
 		function = "uart0";
 	};
+
+	/omit-if-no-ref/
+	spi0_full_pins: spi0-full-pins {
+		pins = "PC2", "PC3", "PC4", "PC5", "PC6", "PC7";
+		function = "spi0";
+	};
 };
 
 &uart0 {
@@ -166,6 +172,59 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart5_pb_pins>;
 	status = "okay";
+};
+
+&spi0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_full_pins>;
+	status = "okay";
+
+	flash@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "winbond,w25q128", "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <100000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "awboot";
+				reg = <0x00000000 0x00010000>;
+			};
+
+			partition@1 {
+				label = "awboot1";
+				reg = <0x00010000 0x00010000>;
+			};
+
+			partition@2 {
+				label = "awboot2";
+				reg = <0x00020000 0x00010000>;
+			};
+
+			/* 256 Kbytes */
+			partition@3 {
+				label = "dtb";
+				reg = <0x00040000 0x00040000>;
+			};
+
+			/* 7.5 Mbytes */
+			partition@4 {
+				label = "kernel";
+				reg = <0x00080000 0x00780000>;
+			};
+
+			/* 8 Mbytes */
+			partition@5 {
+				label = "rootfs";
+				reg = <0x00800000 0x00800000>;
+			};
+		};
+	};
 };
 
 /* The USB-C socket has its CC pins pulled to GND, so is hardwired as a UFP. */
