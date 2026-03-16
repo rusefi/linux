@@ -154,12 +154,6 @@
 	status = "okay";
 };
 
-&uart5 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart5_pb_pins>;
-	status = "okay";
-};
-
 &spi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_full_pins>;
@@ -250,6 +244,6 @@
 	status = "disabled";
 };
 
-&can0 {
+&can1 {
 	status = "okay";
 };
