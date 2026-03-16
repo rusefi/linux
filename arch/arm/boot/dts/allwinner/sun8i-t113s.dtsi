@@ -18,7 +18,7 @@
 			compatible = "arm,cortex-a7";
 			device_type = "cpu";
 			reg = <0>;
-			enable-method = "allwinner,sun8iw20p1";
+			enable-method = "psci";
 			clocks = <&ccu CLK_CPUX>;
 			clock-names = "cpu";
 		};
@@ -27,7 +27,7 @@
 			compatible = "arm,cortex-a7";
 			device_type = "cpu";
 			reg = <1>;
-			enable-method = "allwinner,sun8iw20p1";
+			enable-method = "psci";
 			clocks = <&ccu CLK_CPUX>;
 			clock-names = "cpu";
 		};
@@ -75,5 +75,10 @@
 		interrupts = <GIC_SPI 172 IRQ_TYPE_LEVEL_HIGH>,
 			     <GIC_SPI 173 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-affinity = <&cpu0>, <&cpu1>;
+	};
+
+	psci {
+		compatible = "arm,psci-0.2";
+		method = "smc";
 	};
 };
