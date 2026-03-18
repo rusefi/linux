@@ -3640,6 +3640,33 @@ static const struct panel_desc newhaven_nhd_70_800480ef_atxl = {
 	.connector_type = DRM_MODE_CONNECTOR_DPI,
 };
 
+static const struct drm_display_mode dwin_hdw070_007l_mode = {
+	.clock = 54030,
+	.hdisplay = 1024,
+	.hsync_start = 1024 + 24,
+	.hsync_end = 1024 + 24 + 136,
+	.htotal = 1024 + 24 + 136 + 160,
+	.vdisplay = 600,
+	.vsync_start = 600 + 3,
+	.vsync_end = 600 + 3 + 6,
+	.vtotal = 600 + 3 + 6 + 61,
+	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
+};
+
+static const struct panel_desc dwin_hdw070_007l = {
+	.modes = &dwin_hdw070_007l_mode,
+	.num_modes = 1,
+	.bpc = 8,
+	.size = {
+		.width = 184,
+		.height = 115,
+	},
+	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
+	.bus_flags = DRM_BUS_FLAG_DE_HIGH | DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE |
+		     DRM_BUS_FLAG_SYNC_DRIVE_POSEDGE,
+	.connector_type = DRM_MODE_CONNECTOR_DPI,
+};
+
 static const struct display_timing nlt_nl192108ac18_02d_timing = {
 	.pixelclock = { 130000000, 148350000, 163000000 },
 	.hactive = { 1920, 1920, 1920 },
@@ -5319,6 +5346,9 @@ static const struct of_device_id platform_of_match[] = {
 	}, {
 		.compatible = "newhaven,nhd-7.0-800480ef-atxl",
 		.data = &newhaven_nhd_70_800480ef_atxl,
+	}, {
+		.compatible = "dwin,hdw070_007l",
+		.data = &dwin_hdw070_007l,
 	}, {
 		.compatible = "nlt,nl192108ac18-02d",
 		.data = &nlt_nl192108ac18_02d,
