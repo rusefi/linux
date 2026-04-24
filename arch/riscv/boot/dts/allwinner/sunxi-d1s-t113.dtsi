@@ -280,6 +280,12 @@
 			};
 
 			/omit-if-no-ref/
+			pwm5_pe_pins: pwm5-pe-pins {
+				pins = "PE13";
+				function = "pwm5";
+			};
+
+			/omit-if-no-ref/
 			pwm7_pd_pins: pwm7-pd-pins {
 				pins = "PD22";
 				function = "pwm7";
