@@ -75,22 +75,45 @@
 		vin-supply = <&reg_3v3>;
 	};
 
-	panel_rgb: panel-rgb {
-		compatible = "dwin,hdw070_007l";
+	panel_lvds: panel-lvds {
+		compatible = "boe,ev101wxm-n10", "panel-lvds";
 		power-supply = <&reg_3v3>;
+
+		/* TODO */
 		/* backlight = <&bl>; */
 		/* enable-gpios = <&gpioi 12 GPIO_ACTIVE_HIGH>; */
+		/* ddc-i2c-bus */
+
+		width-mm = <218>;
+		height-mm = <135>;
+
+		data-mapping = "vesa-24";
+
 		status = "okay";
+
+		panel-timing {
+			clock-frequency = <71000000>;
+			hactive = <1280>;
+			vactive = <800>;
+			hfront-porch = <48>;
+			hback-porch = <80>;
+			hsync-len = <32>;
+			vfront-porch = <3>;
+			vback-porch = <14>;
+			vsync-len = <6>;
+		};
+
 		port {
-			panel_in_rgb: endpoint {
-				remote-endpoint = <&tcon_lcd0_out_rgb>;
+			panel_in_lvds: endpoint {
+				remote-endpoint = <&tcon_lcd0_out_lvds>;
 			};
 		};
 	};
 
 	bl: backlight {
 		compatible = "pwm-backlight";
-		pwms = <&pwm 7 100000 0>;
+		pwms = <&pwm 5 100000 0>;
+		enable-gpios = <&pio 4 12 GPIO_ACTIVE_HIGH>;	/* PE12 */
 		brightness-levels = <45 46 47 48 49 50 51 52 53 54 55>;
 		default-brightness-level = <5>;
 	};
@@ -203,15 +226,15 @@
 
 &tcon_lcd0 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&lcd_rgb666_pins>;
+	pinctrl-0 = <&lcd_lvds0_pins>;
 
 	status = "okay";
 };
 
 &tcon_lcd0_out {
-	tcon_lcd0_out_rgb: endpoint@0 {
+	tcon_lcd0_out_lvds: endpoint@0 {
 		reg = <0>;
-		remote-endpoint = <&panel_in_rgb>;
+		remote-endpoint = <&panel_in_lvds>;
 	};
 };
 
@@ -229,8 +252,8 @@
 
 &pwm {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pwm7_pg_pins>;
-	status = "disabled";
+	pinctrl-0 = <&pwm5_pe_pins>;
+	status = "okay";
 };
 
 &emac {
