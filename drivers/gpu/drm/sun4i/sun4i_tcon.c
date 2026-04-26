@@ -1546,6 +1546,7 @@ static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
 	.has_channel_0		= true,
 	.dclk_min_div		= 1,
 	.set_mux		= sun8i_r40_tcon_tv_set_mux,
+	.supports_lvds		= true,
 };
 
 /* sun4i_drv uses this list to check if a device node is a TCON */
