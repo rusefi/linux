@@ -12,6 +12,7 @@
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/of_platform.h>
+#include <linux/phy/phy.h>
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 #include <linux/reset.h>
@@ -432,6 +433,18 @@ static void sun4i_tcon0_mode_set_lvds(struct sun4i_tcon *tcon,
 	unsigned long long rounded_rate;
 
 	WARN_ON(!tcon->quirks->has_channel_0);
+
+	if (tcon->dphy) {
+		union phy_configure_opts opts = { };
+		//struct phy_configure_opts_lvds *cfg = &opts.lvds;
+		phy_init(tcon->dphy);
+
+		/* TODO: fill cfg */
+
+		phy_set_mode(tcon->dphy, PHY_MODE_LVDS);
+		phy_configure(tcon->dphy, &opts);
+		phy_power_on(tcon->dphy);
+	}
 
 	/* TODO: Adjust source clock in CCU
 	 * Configure LCD_DCLK_REG.LCD_DCLK_DIV (reg0x44) to 7 after DCLK is determined;
@@ -1213,6 +1226,13 @@ static int sun4i_tcon_bind(struct device *dev, struct device *master,
 			can_lvds = false;
 		} else {
 			can_lvds = true;
+		}
+
+		/* optional DSI combophy that is going to be switched and configured in LVDS mode */
+		tcon->dphy = devm_phy_get(dev, "dphy");
+		if (IS_ERR(tcon->dphy)) {
+			dev_warn(dev, "Couldn't get optional MIPI/LVDS D-PHY\n");
+			tcon->dphy = NULL;
 		}
 	} else {
 		can_lvds = false;

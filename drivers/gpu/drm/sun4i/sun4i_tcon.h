@@ -276,6 +276,9 @@ struct sun4i_tcon {
 	struct reset_control		*lcd_rst;
 	struct reset_control		*lvds_rst;
 
+	/* Optional DPHY for LVDS mode */
+	struct phy		*dphy;
+
 	/* Platform adjustments */
 	const struct sun4i_tcon_quirks	*quirks;
 
