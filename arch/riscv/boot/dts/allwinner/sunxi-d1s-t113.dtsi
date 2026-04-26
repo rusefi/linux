@@ -975,6 +975,10 @@
 			resets = <&ccu RST_BUS_TCON_LCD0>,
 				 <&ccu RST_BUS_LVDS0>;
 			reset-names = "lcd", "lvds";
+
+			phys = <&dphy>;
+			phy-names = "dphy";
+
 			#clock-cells = <0>;
 
 			ports {
