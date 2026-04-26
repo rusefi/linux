@@ -192,9 +192,12 @@ struct sun6i_dphy {
 
 	struct phy				*phy;
 	struct phy_configure_opts_mipi_dphy	config;
+	struct phy_configure_opts_lvds		lvds_config;
 
 	const struct sun6i_dphy_variant		*variant;
 	enum sun6i_dphy_direction		direction;
+
+	enum phy_mode			mode;
 };
 
 static int sun6i_dphy_init(struct phy *phy)
@@ -213,11 +216,36 @@ static int sun6i_dphy_configure(struct phy *phy, union phy_configure_opts *opts)
 	struct sun6i_dphy *dphy = phy_get_drvdata(phy);
 	int ret;
 
-	ret = phy_mipi_dphy_config_validate(&opts->mipi_dphy);
-	if (ret)
-		return ret;
+	if (dphy->mode == PHY_MODE_MIPI_DPHY) {
+		ret = phy_mipi_dphy_config_validate(&opts->mipi_dphy);
+		if (ret)
+			return ret;
 
-	memcpy(&dphy->config, opts, sizeof(dphy->config));
+		memcpy(&dphy->config, opts, sizeof(dphy->config));
+	}
+
+	if (dphy->mode == PHY_MODE_LVDS) {
+		/* TODO: validate */
+
+		memcpy(&dphy->lvds_config, opts, sizeof(dphy->lvds_config));
+	}
+
+	return 0;
+}
+
+static int sub6i_dphy_set_mode(struct phy *phy, enum phy_mode mode,
+				   int submode)
+{
+	struct sun6i_dphy *dphy = phy_get_drvdata(phy);
+
+	switch (mode) {
+	case PHY_MODE_MIPI_DPHY:
+	case PHY_MODE_LVDS:
+		dphy->mode = mode;
+		break;
+	default:
+		return -EINVAL;
+	}
 
 	return 0;
 }
@@ -488,9 +516,64 @@ static int sun6i_dphy_rx_power_on(struct sun6i_dphy *dphy)
 	return 0;
 }
 
+static int sun6i_dphy_lvds_power_on(struct sun6i_dphy *dphy)
+{
+	regmap_write(dphy->regs, SUN50I_COMBO_PHY_REG1,
+		SUN50I_COMBO_PHY_REG2_REG_VREF1P6(7) |
+		SUN50I_COMBO_PHY_REG2_REG_VREF0P8(3));
+	//dphy_dev[sel]->combo_phy_reg1.dwval = 0x43;
+
+	regmap_write(dphy->regs, SUN50I_COMBO_PHY_REG0,
+		SUN50I_COMBO_PHY_REG0_EN_CP);
+	//dphy_dev[sel]->combo_phy_reg0.dwval = 0x1;
+
+	udelay(5);
+
+	regmap_update_bits(dphy->regs, SUN50I_COMBO_PHY_REG0,
+		SUN50I_COMBO_PHY_REG0_EN_LVDS,
+		SUN50I_COMBO_PHY_REG0_EN_LVDS);
+	//dphy_dev[sel]->combo_phy_reg0.dwval = 0x5;
+	udelay(5);
+	regmap_update_bits(dphy->regs, SUN50I_COMBO_PHY_REG0,
+		SUN50I_COMBO_PHY_REG0_EN_COMBOLDO,
+		SUN50I_COMBO_PHY_REG0_EN_COMBOLDO);
+	//dphy_dev[sel]->combo_phy_reg0.dwval = 0x7;
+	udelay(5);
+	regmap_update_bits(dphy->regs, SUN50I_COMBO_PHY_REG0,
+		SUN50I_COMBO_PHY_REG0_EN_MIPI,
+		SUN50I_COMBO_PHY_REG0_EN_MIPI);
+	//dphy_dev[sel]->combo_phy_reg0.dwval = 0xf;
+
+#if 1
+	regmap_write(dphy->regs, SUN6I_DPHY_ANA4_REG,
+		SUN6I_DPHY_ANA4_REG_EN_MIPI |
+		SUN6I_DPHY_ANA4_REG_IB(2));
+	//dphy_dev[sel]->dphy_ana4.dwval = 0x84000000;
+
+	regmap_write(dphy->regs, SUN6I_DPHY_ANA3_REG,
+		SUN6I_DPHY_ANA3_EN_LDOD |
+		SUN6I_DPHY_ANA3_EN_LDOR);
+	//dphy_dev[sel]->dphy_ana3.dwval = 0x01040000;
+
+	// ???
+	//dphy_dev[sel]->dphy_ana2.dwval =
+	//    dphy_dev[sel]->dphy_ana2.dwval & (0x0 << 1);
+
+	regmap_write(dphy->regs, SUN6I_DPHY_ANA1_REG,
+		0);
+	//dphy_dev[sel]->dphy_ana1.dwval = 0x0;
+#endif
+
+	return 0;
+}
+
 static int sun6i_dphy_power_on(struct phy *phy)
 {
 	struct sun6i_dphy *dphy = phy_get_drvdata(phy);
+
+	if (dphy->mode == PHY_MODE_LVDS) {
+		return sun6i_dphy_lvds_power_on(dphy);
+	}
 
 	switch (dphy->direction) {
 	case SUN6I_DPHY_DIRECTION_TX:
@@ -531,6 +614,7 @@ static int sun6i_dphy_exit(struct phy *phy)
 
 static const struct phy_ops sun6i_dphy_ops = {
 	.configure	= sun6i_dphy_configure,
+	.set_mode	= sub6i_dphy_set_mode,
 	.power_on	= sun6i_dphy_power_on,
 	.power_off	= sun6i_dphy_power_off,
 	.init		= sun6i_dphy_init,
