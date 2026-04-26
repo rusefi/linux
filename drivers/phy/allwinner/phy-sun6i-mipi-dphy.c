@@ -664,6 +664,12 @@ static int sun6i_dphy_probe(struct platform_device *pdev)
 		return PTR_ERR(dphy->reset);
 	}
 
+	dphy->bus_clk = devm_clk_get_enabled(&pdev->dev, "bus");
+	if (IS_ERR(dphy->bus_clk)) {
+		dev_err(&pdev->dev, "Couldn't get the DPHY bus clock\n");
+		return PTR_ERR(dphy->bus_clk);
+	}
+
 	dphy->mod_clk = devm_clk_get(&pdev->dev, "mod");
 	if (IS_ERR(dphy->mod_clk)) {
 		dev_err(&pdev->dev, "Couldn't get the DPHY mod clock\n");
