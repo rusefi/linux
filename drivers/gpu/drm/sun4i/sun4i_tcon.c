@@ -429,12 +429,18 @@ static void sun4i_tcon0_mode_set_lvds(struct sun4i_tcon *tcon,
 	unsigned int bp;
 	u8 clk_delay;
 	u32 reg, val = 0;
+	unsigned long long rounded_rate;
 
 	WARN_ON(!tcon->quirks->has_channel_0);
 
+	/* TODO: Adjust source clock in CCU
+	 * Configure LCD_DCLK_REG.LCD_DCLK_DIV (reg0x44) to 7 after DCLK is determined;
+	 * Configure the PLL clock in CCU based on proportional relationship;
+	 */
 	tcon->dclk_min_div = 7;
 	tcon->dclk_max_div = 7;
-	clk_set_rate(tcon->dclk, mode->crtc_clock * 1000);
+	rounded_rate = clk_round_rate(tcon->dclk, mode->crtc_clock * 1000);
+	clk_set_rate(tcon->dclk, rounded_rate);
 
 	/* Set the resolution */
 	regmap_write(tcon->regs, SUN4I_TCON0_BASIC0_REG,
