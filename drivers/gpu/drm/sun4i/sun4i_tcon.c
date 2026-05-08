@@ -171,6 +171,45 @@ static void sun6i_tcon_setup_lvds_phy(struct sun4i_tcon *tcon,
 			  SUN6I_TCON0_LVDS_ANA0_EN_DRVD(val));
 }
 
+static void sun4i_113_tcon_setup_lvds_phy(struct sun4i_tcon *tcon,
+				      const struct drm_encoder *encoder)
+{
+	u8 val;
+
+	if (1) {
+		return;
+	}
+
+	regmap_write(tcon->regs, SUN4I_TCON0_LVDS_ANA0_REG,
+		     SUN6I_TCON0_LVDS_ANA0_C(2) |
+		     SUN6I_TCON0_LVDS_ANA0_V(3) |
+		     SUN6I_TCON0_LVDS_ANA0_EN_LVDS |
+		     SUN6I_TCON0_LVDS_ANA0_EN_24M);
+	udelay(2);
+
+	regmap_update_bits(tcon->regs, SUN4I_TCON0_LVDS_ANA0_REG,
+			   SUN6I_TCON0_LVDS_ANA0_EN_MB,
+			   SUN6I_TCON0_LVDS_ANA0_EN_MB);
+	udelay(2);
+
+	regmap_update_bits(tcon->regs, SUN4I_TCON0_LVDS_ANA0_REG,
+			   SUN6I_TCON0_LVDS_ANA0_EN_DRVC,
+			   SUN6I_TCON0_LVDS_ANA0_EN_DRVC);
+
+	if (sun4i_tcon_get_pixel_depth(encoder) == 18) {
+		printk(" FU 18 bit\n");
+		val = 7;
+	}
+	else {
+		printk(" FU 24 bit\n");
+		val = 0xf;
+	}
+
+	regmap_write_bits(tcon->regs, SUN4I_TCON0_LVDS_ANA0_REG,
+			  SUN6I_TCON0_LVDS_ANA0_EN_DRVD(0xf),
+			  SUN6I_TCON0_LVDS_ANA0_EN_DRVD(val));
+}
+
 static void sun4i_tcon_lvds_set_status(struct sun4i_tcon *tcon,
 				       const struct drm_encoder *encoder,
 				       bool enabled)
@@ -179,10 +218,15 @@ static void sun4i_tcon_lvds_set_status(struct sun4i_tcon *tcon,
 		regmap_update_bits(tcon->regs, SUN4I_TCON0_LVDS_IF_REG,
 				   SUN4I_TCON0_LVDS_IF_EN,
 				   SUN4I_TCON0_LVDS_IF_EN);
+		regmap_update_bits(tcon->regs, SUN4I_TCON0_LVDS1_IF_REG,
+				   SUN4I_TCON0_LVDS_IF_EN,
+				   SUN4I_TCON0_LVDS_IF_EN);
 		if (tcon->quirks->setup_lvds_phy)
 			tcon->quirks->setup_lvds_phy(tcon, encoder);
 	} else {
 		regmap_update_bits(tcon->regs, SUN4I_TCON0_LVDS_IF_REG,
+				   SUN4I_TCON0_LVDS_IF_EN, 0);
+		regmap_update_bits(tcon->regs, SUN4I_TCON0_LVDS1_IF_REG,
 				   SUN4I_TCON0_LVDS_IF_EN, 0);
 	}
 }
@@ -392,7 +436,7 @@ static void sun4i_tcon0_mode_set_cpu(struct sun4i_tcon *tcon,
 	 * pixel cycle, but it's not clear what a pixel cycle is.
 	 */
 	regmap_read(tcon->regs, SUN4I_TCON0_DCLK_REG, &tcon_div);
-	tcon_div &= GENMASK(6, 0);
+	tcon_div &= SUN4I_TCON0_DCLK_DIV_MASK;
 	block_space = mode->htotal * bpp / (tcon_div * lanes);
 	block_space -= mode->hdisplay + 40;
 
@@ -502,6 +546,7 @@ static void sun4i_tcon0_mode_set_lvds(struct sun4i_tcon *tcon,
 		reg |= SUN4I_TCON0_LVDS_IF_BITWIDTH_18BITS;
 
 	regmap_write(tcon->regs, SUN4I_TCON0_LVDS_IF_REG, reg);
+	regmap_write(tcon->regs, SUN4I_TCON0_LVDS1_IF_REG, reg);
 
 	/* Setup the polarity of the various signals */
 	if (!(mode->flags & DRM_MODE_FLAG_PHSYNC))
@@ -1566,6 +1611,7 @@ static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
 	.has_channel_0		= true,
 	.dclk_min_div		= 1,
 	.set_mux		= sun8i_r40_tcon_tv_set_mux,
+	.setup_lvds_phy		= sun4i_113_tcon_setup_lvds_phy,
 	.supports_lvds		= true,
 };
 
