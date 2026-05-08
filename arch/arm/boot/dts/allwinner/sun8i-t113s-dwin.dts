@@ -75,6 +75,25 @@
 		vin-supply = <&reg_3v3>;
 	};
 
+	reg_usb0_vbus: usb0-vbus {
+		compatible = "regulator-fixed";
+		regulator-name = "usb0-vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpio = <&pio 6 6 GPIO_ACTIVE_HIGH>;	/* PG6 */
+	};
+
+	reg_usb1_vbus: usb1-vbus {
+		compatible = "regulator-fixed";
+		regulator-name = "usb1-vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-boot-on;
+		enable-active-high;
+		gpio = <&pio 6 9 GPIO_ACTIVE_HIGH>;	/* PG9 */
+	};
+
 	panel_lvds: panel-lvds {
 		compatible = "boe,ev101wxm-n10", "panel-lvds";
 		power-supply = <&reg_3v3>;
@@ -133,10 +152,6 @@
 	clock-frequency = <1200000000>;
 };
 
-&ehci1 {
-	status = "okay";
-};
-
 &mmc0 {
 	pinctrl-0 = <&mmc0_pins>;
 	pinctrl-names = "default";
@@ -162,6 +177,7 @@
 
 &pio {
 	vcc-pb-supply = <&reg_3v3>;
+	vcc-pc-supply = <&reg_3v3>;
 	vcc-pd-supply = <&reg_3v3>;
 	vcc-pe-supply = <&reg_avdd2v8>;
 	vcc-pf-supply = <&reg_3v3>;
@@ -276,4 +292,34 @@
 		reset-deassert-us = <50000>;
 		/* reset-gpios = <&gpio0 RK_PA7 GPIO_ACTIVE_LOW>; */
 	};
+};
+
+&ehci0 {
+	status = "okay";
+};
+
+&ehci1 {
+	status = "okay";
+};
+
+&ohci0 {
+	status = "okay";
+};
+
+&ohci1 {
+	status = "okay";
+};
+
+&usb_otg {
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usbphy {
+	usb0_vbus_det-gpios = <&pio 6 7 GPIO_ACTIVE_HIGH>;	/* PG7 */
+	/* Following is not used by Phy driver */
+	usb1_id_det-gpios = <&pio 6 8 GPIO_ACTIVE_HIGH>;	/* PG8 */
+	usb0_vbus-supply = <&reg_usb0_vbus>;
+	usb1_vbus-supply = <&reg_usb1_vbus>;
+	status = "okay";
 };
