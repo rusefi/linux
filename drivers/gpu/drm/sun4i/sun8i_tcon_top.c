@@ -100,7 +100,6 @@ EXPORT_SYMBOL(sun8i_tcon_top_set_hdmi_src);
 int sun8i_tcon_top_de_config(struct device *dev, int mixer, int tcon)
 {
 	struct sun8i_tcon_top *tcon_top = dev_get_drvdata(dev);
-	u32 mixer_msk, other_msk;
 	unsigned long flags;
 	u32 reg;
 
@@ -119,20 +118,27 @@ int sun8i_tcon_top_de_config(struct device *dev, int mixer, int tcon)
 		return -EINVAL;
 	}
 
-	mixer_msk = mixer ? TCON_TOP_PORT_DE1_MSK : TCON_TOP_PORT_DE0_MSK;
-	other_msk = mixer ? TCON_TOP_PORT_DE0_MSK : TCON_TOP_PORT_DE1_MSK;
-
 	spin_lock_irqsave(&tcon_top->reg_lock, flags);
 
 	reg = readl(tcon_top->regs + TCON_TOP_PORT_SEL_REG);
+	if (mixer == 0) {
+		reg &= ~TCON_TOP_PORT_DE0_MSK;
+		reg |= FIELD_PREP(TCON_TOP_PORT_DE0_MSK, tcon);
 
-	reg &= ~mixer_msk;
-	reg |= u32_encode_bits(tcon, mixer_msk);
+		if (FIELD_GET(TCON_TOP_PORT_DE1_MSK, reg) == tcon) {
+			reg &= ~TCON_TOP_PORT_DE1_MSK;
+			reg |= FIELD_PREP(TCON_TOP_PORT_DE1_MSK,
+					  sun8i_tcon_top_park_index(tcon_top, tcon));
+		}
+	} else {
+		reg &= ~TCON_TOP_PORT_DE1_MSK;
+		reg |= FIELD_PREP(TCON_TOP_PORT_DE1_MSK, tcon);
 
-	if (u32_get_bits(reg, other_msk) == tcon) {
-		reg &= ~other_msk;
-		reg |= u32_encode_bits(sun8i_tcon_top_park_index(tcon_top, tcon),
-				       other_msk);
+		if (FIELD_GET(TCON_TOP_PORT_DE0_MSK, reg) == tcon) {
+			reg &= ~TCON_TOP_PORT_DE0_MSK;
+			reg |= FIELD_PREP(TCON_TOP_PORT_DE0_MSK,
+					  sun8i_tcon_top_park_index(tcon_top, tcon));
+		}
 	}
 
 	writel(reg, tcon_top->regs + TCON_TOP_PORT_SEL_REG);
