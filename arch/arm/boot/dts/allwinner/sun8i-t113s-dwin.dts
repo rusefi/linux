@@ -152,6 +152,10 @@
 	clock-frequency = <1200000000>;
 };
 
+&wdt {
+	status = "okay";
+};
+
 &mmc0 {
 	pinctrl-0 = <&mmc0_pins>;
 	pinctrl-names = "default";
