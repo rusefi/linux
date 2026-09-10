@@ -322,7 +322,6 @@
 };
 
 &usbphy {
-	usb0_vbus_det-gpios = <&pio 6 7 GPIO_ACTIVE_HIGH>;	/* PG7 */
 	/* Following is not used by Phy driver */
 	usb1_id_det-gpios = <&pio 6 8 GPIO_ACTIVE_HIGH>;	/* PG8 */
 	usb0_vbus-supply = <&reg_usb0_vbus>;
