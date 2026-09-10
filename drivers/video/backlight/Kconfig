@@ -494,6 +494,16 @@ config BACKLIGHT_LED
 	  If you have a LCD backlight adjustable by LED class driver, say Y
 	  to enable this driver.
 
+config BACKLIGHT_DWIN_TPS02
+	tristate "DWIN TPS02 backlight"
+	depends on MFD_DWIN_TPS02 && BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here to enable the backlight controlled by a DWIN TPS02 UART
+	  controller.
+
+	  If this driver is compiled as a module, it will be called
+	  dwin-tps02-backlight.
+
 endif # BACKLIGHT_CLASS_DEVICE
 
 endmenu

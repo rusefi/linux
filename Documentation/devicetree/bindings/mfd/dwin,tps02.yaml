@@ -1,0 +1,92 @@
+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/mfd/dwin,tps02.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: DWIN TPS02 UART controller
+
+maintainers:
+  - Andrey Gusakov <dron0gus@gmail.com>
+
+description: |
+  The DWIN TPS02 is a UART-attached display controller which provides
+  touchscreen, RTC, beeper and panel brightness functions.
+
+properties:
+  compatible:
+    const: dwin,tps02
+
+  touch:
+    type: object
+    $ref: /schemas/input/touchscreen/touchscreen.yaml#
+    properties:
+      compatible:
+        const: dwin,tps02-touch
+      touchscreen-size-x: true
+      touchscreen-size-y: true
+      status: true
+    required:
+      - compatible
+      - touchscreen-size-x
+      - touchscreen-size-y
+    unevaluatedProperties: false
+
+  rtc:
+    type: object
+    properties:
+      compatible:
+        const: dwin,tps02-rtc
+      status: true
+    required:
+      - compatible
+    additionalProperties: false
+
+  beeper:
+    type: object
+    properties:
+      compatible:
+        const: dwin,tps02-beeper
+      status: true
+    required:
+      - compatible
+    additionalProperties: false
+
+  backlight:
+    type: object
+    properties:
+      compatible:
+        const: dwin,tps02-backlight
+      status: true
+    required:
+      - compatible
+    additionalProperties: false
+
+required:
+  - compatible
+
+additionalProperties: false
+
+examples:
+  - |
+    #include <dt-bindings/input/input.h>
+
+    serial {
+        tps02 {
+            compatible = "dwin,tps02";
+
+            touch {
+                compatible = "dwin,tps02-touch";
+                touchscreen-size-x = <1280>;
+                touchscreen-size-y = <800>;
+            };
+
+            rtc {
+                compatible = "dwin,tps02-rtc";
+            };
+
+            beeper {
+                compatible = "dwin,tps02-beeper";
+            };
+        };
+    };

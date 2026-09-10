@@ -2506,6 +2506,24 @@ config MFD_QNAP_MCU
 	  This driver implements the base serial protocol to talk to the
 	  device and provides functions for the other parts to hook into.
 
+config MFD_DWIN_TPS02
+	tristate "DWIN TPS02 serial MFD"
+	depends on SERIAL_DEV_BUS && OF
+	select MFD_CORE
+	select RTC_LIB
+	help
+	  Shared serial transport for touch, RTC, beeper and backlight on
+	  DWIN 36-series displays. Enable the required child drivers too.
+
+config MFD_DWIN_TPS02_KUNIT_TEST
+	tristate "DWIN TPS02 protocol tests" if !KUNIT_ALL_TESTS
+	depends on KUNIT
+	select RTC_LIB
+	default KUNIT_ALL_TESTS
+	help
+	  Test framing, checksums, stream recovery and calendar/touch decoding
+	  against captured DWIN TPS02 packets without accessing hardware.
+
 config MFD_RSMU_I2C
 	tristate "Renesas Synchronization Management Unit with I2C"
 	depends on I2C && OF

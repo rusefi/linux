@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/* Inherit board wiring, including the integration layer's LVDS/boot patches. */
+#include "sun8i-t113s-dwin.dts"
+
+/ {
+	model = "DWIN DMT12800T101_36WTC";
+	compatible = "dwin,dmt12800t101-36wtc", "dwin,hmi-t113s",
+		     "allwinner,sun8i-t113s";
+
+	aliases {
+		rtc0 = &tps02_rtc;
+		rtc1 = &rtc;
+	};
+};
+
+/* PWM/GPIO blanking and dimming were verified on this exact model. */
+&panel_lvds {
+	backlight = <&bl>;
+};
+
+&uart1 {
+	tps02 {
+		compatible = "dwin,tps02";
+
+		touch {
+			compatible = "dwin,tps02-touch";
+			touchscreen-size-x = <1280>;
+			touchscreen-size-y = <800>;
+		};
+
+		tps02_rtc: rtc {
+			compatible = "dwin,tps02-rtc";
+		};
+
+		beeper {
+			compatible = "dwin,tps02-beeper";
+		};
+
+		backlight {
+			compatible = "dwin,tps02-backlight";
+			/* No visible effect in the 2026-09-10 command test. */
+			status = "disabled";
+		};
+	};
+};

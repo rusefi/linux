@@ -561,6 +561,18 @@ config TOUCHSCREEN_DWIN
 	  To compile this driver as a module, choose M here: the
 	  module will be called gunze.
 
+config TOUCHSCREEN_DWIN_TPS02
+	tristate "DWIN TPS02 touchscreen"
+	depends on MFD_DWIN_TPS02
+	help
+	  Say Y here to enable the touchscreen provided by a DWIN TPS02 UART
+	  controller.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called dwin-tps02.
+
 config TOUCHSCREEN_EKTF2127
 	tristate "Elan eKTF2127 I2C touchscreen"
 	depends on I2C

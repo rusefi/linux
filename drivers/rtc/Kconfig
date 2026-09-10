@@ -2142,4 +2142,14 @@ config RTC_DRV_HID_SENSOR_TIME
 	  If this driver is compiled as a module, it will be named
 	  rtc-hid-sensor-time.
 
+config RTC_DRV_DWIN_TPS02
+	tristate "DWIN TPS02 RTC"
+	depends on MFD_DWIN_TPS02
+	help
+	  Say Y here to enable the real-time clock provided by a DWIN TPS02
+	  UART controller.
+
+	  If this driver is compiled as a module, it will be called
+	  rtc-dwin-tps02.
+
 endif # RTC_CLASS

@@ -335,6 +335,24 @@ config INPUT_GPIO_BEEPER
 	  To compile this driver as a module, choose M here: the
 	  module will be called gpio-beeper.
 
+config INPUT_DWIN_TPS02_BEEPER
+	tristate "DWIN TPS02 beeper"
+	depends on MFD_DWIN_TPS02
+	help
+	  Say Y here to enable the beeper provided by a DWIN TPS02 UART
+	  controller.
+
+	  If this driver is compiled as a module, it will be called
+	  dwin-tps02-beeper.
+
+config INPUT_DWIN_TPS02_BEEPER_KUNIT_TEST
+	bool "KUnit tests for DWIN TPS02 beeper" if !KUNIT_ALL_TESTS
+	depends on KUNIT && MFD_DWIN_TPS02=y && INPUT_DWIN_TPS02_BEEPER=y
+	default KUNIT_ALL_TESTS
+	help
+	  Tests the DWIN TPS02 beeper worker's concurrent OFF, retrigger, and
+	  cleanup behavior using a static stub for the MFD send operation.
+
 config INPUT_GPIO_DECODER
 	tristate "Polled GPIO Decoder Input driver"
 	depends on GPIOLIB || COMPILE_TEST
